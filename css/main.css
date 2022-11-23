@@ -5,16 +5,20 @@ body{
 }
 
 .board{
-    border: 2px solid darkgray;
+    border: 4px solid darkgray;
     width: 500px;
     height: 500px;
     margin: auto;
-    margin-top: 150px;
 }
 
 .cell{
-    border: 1px solid black;
+    border: 4px solid gray;
     width: 20px;
     height: 20px;
+   content-visibility:hidden;
+
+}
+
+.options-tool{
     
 }
