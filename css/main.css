@@ -1,20 +1,55 @@
-body{
+body {
     margin: 0;
     font-family: sans-serif;
     text-align: center;
 }
 
-.board{
+.board {
     border: 4px solid darkgray;
     width: 500px;
     height: 500px;
     margin: auto;
 }
 
-.cell{
+.cell {
     border: 4px solid gray;
     width: 20px;
     height: 20px;
-   content-visibility:hidden;
+    cursor: pointer;
+    /* content-visibility:hidden; */
 
+}
+.smiley{
+    height: 50px;
+    width: 50px;
+    cursor: pointer;
+}
+.score-counter {
+    font-size: large;
+    border: 2px red solid;
+    background-color: red;
+    border-radius: 5px;
+    height: auto;
+    width: 100px;
+    margin: auto;
+}
+.timer {
+    font-size: large;
+    border: 2px yellow solid;
+    background-color: yellow;
+    border-radius: 5px;
+    height: auto;
+    width: 100px;
+    margin: auto;
+}
+
+.buttons{
+    height: auto;
+    width: 300px;
+    margin: auto;
+    background-color: yellow;
+}
+.button{
+    margin: 20px;
+cursor: pointer;
 }
