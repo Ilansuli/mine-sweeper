@@ -39,23 +39,14 @@ function renderTools() {
     elSmiley.innerText = SMILEY
     //  elLife.innerText = LIFE
 }
-function  onLevel(elLvl){
-gBoard = elLvl
-gGame.shownCount = 0 
-onInIt()
+
+function onLevel(elLvl){
+    gBoard = buildBoard(elLvl)
+    gGame.shownCount = 0
+      var elScore = document.querySelector('.score-counter')
+    elScore.innerText = gGame.shownCount
+    renderBoard(gBoard)
+    
 }
-function showTimer() { //starting timer, (minutes,seconds.mlSeconds(3digits))
-    if (gGame.shownCount === 1) {
-        var timer = document.querySelector('.timer')
-        var start = Date.now()
-        gTimerInterval = setInterval(function () {// set var gTimerInterval to use
-            var currTs = Date.now()
-            var secs = parseInt((currTs - start) / 1000)
-            var ms = (currTs - start) - secs * 1000
-            ms = '000' + ms
-            // 00034 // 0001
-            ms = ms.substring(ms.length - 3, ms.length) // mlSeconds length
-            timer.innerText = `\n ${secs}:${ms}`
-        }, 100)
-    }
-}
+
+

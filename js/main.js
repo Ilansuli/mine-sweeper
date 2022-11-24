@@ -13,19 +13,18 @@ var gBoard
 var gGame = {
     isOn: false,
     shownCount: 0,
-    lifeLeft: 3,
     markedCount: 0,
     secsPassed: 0
 }
-var gTimerInterval
 
 
 function onInIt() {
-    gBoard 
-    renderBoard(gBoard)
+    gBoard = buildBoard(4)
     renderTools()
+    renderBoard(gBoard)
     scoreCounter()
     showTimer()
+
     
 }
 
@@ -57,12 +56,12 @@ function buildBoard(size) {
 }
 
 
-
 function onCellClicked(elCell, i, j) {
     if (elCell.innerText === MARK) return
     if (gGame.shownCount === 0) {         //if the game just started
         gBoard[i][j].isMine = false
         elCell.innerText = elCell.id
+
         gGame.isOn = true
         gBoard[i][j].isShown = true
         gGame.shownCount++
@@ -139,9 +138,11 @@ function checkGameOver() {
 function onStartOver(elSmiley) {
     if (elSmiley.innerText === RESETSMILEY) {
         gGame.shownCount = 0
+        elSmiley.innerText = SMILEY
         onInIt()
     }
     if (elSmiley.innerText === ENDGAMESMILEY) {
+        elSmiley.innerText = SMILEY
         gGame.lifeLeft = 0
         gGame.shownCount = 0
         onInIt()
