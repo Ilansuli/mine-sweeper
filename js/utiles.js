@@ -7,19 +7,16 @@ function renderBoard(board) {
         for (let j = 0; j < board[0].length; j++) {
             var cellData = 'data-i="' + i + '" data-j="' + j + '"'
             var cellClass = `cell-${i}-${j}`
-
             var cell = (board[i][j].isMine) ? MINE : setMinesNegsCount(gBoard, i, j)
-
-            strHTML += `<td  ${cellData} class ="cell ${cellClass}" onclick="onCellClicked(this)">${cell}</td>`
+            strHTML += `<td  ${cellData} class ="cell ${cellClass}" onclick="onCellClicked(this,${i},${j})">${cell}</td>`
         }
+
         strHTML += `</tr>`
     }
     strHTML += `</tbody>`
-    // document.querySelector(.cell)
 
     return document.querySelector('.board').innerHTML = strHTML
 }
-
 function setMinesNegsCount(board, rowIdx, colIdx) {
     var MinesCount = 0
     for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
@@ -36,10 +33,10 @@ function setMinesNegsCount(board, rowIdx, colIdx) {
 
 function renderTools(){
  var elOptionsTools =   document.querySelector('.options-tool')
- var elLife = elOptionsTools.querySelector('.life')
- var elSmiley = elOptionsTools.querySelector('.smiley')
+//  var elLife = elOptionsTools.querySelector('.life')
+var elSmiley = elOptionsTools.querySelector('.smiley')
  elSmiley.innerText = SMILEY
- elLife.innerText = [LIFE,LIFE,LIFE]
+//  elLife.innerText = LIFE
 }
 function showTimer(){
 

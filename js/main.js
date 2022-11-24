@@ -5,17 +5,27 @@
 const MINE = '💣'
 const MARK = '🚩'
 const SMILEY = '😎'
-const LIFE = '💖'
+const RESETSMILEY = '😯'
+const ENDGAMESMILEY = '🤯'
+const LIFE = ['💖,💖,💖']
 
 var gBoard
-var gCounter = 0
+var gGame = {
+    isOn: false,
+    shownCount: 0,
+    lifeLeft: 3,
+    markedCount: 0,
+    secsPassed: 0
+}
 
 
 function onInIt() {
     gBoard = buildBoard(6)
-    // console.log(gBoard);
     renderBoard(gBoard)
+    // console.log(gBoard);
     renderTools()
+
+
 }
 
 function buildBoard(size) {
@@ -40,29 +50,68 @@ function buildBoard(size) {
                 }
             }
         }
+
     }
     return board
 }
 
-function onCellClicked(elCell){
 
-    var i = elCell.dataset.i  
-    var j = elCell.dataset.j
-    if(!gBoard[i][j].isShown){
+
+function onCellClicked(elCell, i, j) {
+
+    if (gGame.shownCount === 0) {         //if the game just started
+        gGame.isOn = true
+        gBoard[i][j].isMine = false
+        elCell.innerText = setMinesNegsCount(gBoard, i, j)
+    }
+    expandShown(gBoard, elCell, i, j)
+    if (!gGame.isOn) return      //if player lost life and waiting to reset OR gameover
+
+    if (!gBoard[i][j].isShown) {
         gBoard[i][j].isShown = true
-        elCell.style.contentVisibility= "visible"
+        elCell.style.contentVisibility = "visible"
+        gGame.shownCount++
     }
-    checkGameOver(i,j)
+    checkGameOver(i, j, elCell)
 }
 
-function checkGameOver(i,j){
-    if(gBoard[i][j].isMine && gBoard[i][j].isShown){
-        gLifeCounter--
-        renderBoard(gBoard)
-        if(gLifeCounter === 0){
-            console.log('GAME');
+function expandShown(board, elCell, rowIdx, colIdx) {
+
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i < 0 || i >= board.length) continue
+    }
+    for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+        if (i === rowIdx && j === colIdx) continue
+        if (j < 0 || j >= board[0].length) continue
+        if (!board[i][j].isMine) elCell.style.contentVisibility = 'visible'
+    }
+}
+
+function checkGameOver(i, j, elCell) {
+    if (gBoard[i][j].isMine) {
+        gGame.isOn = false
+        gGame.lifeLeft--
+        elCell.style.backgroundColor = "red"
+
+        var elSmiley = document.querySelector('.smiley')
+        elSmiley.innerText = RESETSMILEY
+
+        if (gGame.lifeLeft === 0) {
+            document.querySelector('h1').innerText = 'GAME OVER'
+            gGame.isOn = false
+            elSmiley.innerText = ENDGAMESMILEY
         }
-
     }
 }
 
+function onStartOver(elSmiley) {
+    if (elSmiley.innerText === RESETSMILEY) {
+        gGame.shownCount = 0
+        onInIt()
+    }
+    if (elSmiley.innerText === ENDGAMESMILEY) {
+        gGame.lifeLeft = 0
+        gGame.shownCount = 0
+        onInIt()
+    }
+}
