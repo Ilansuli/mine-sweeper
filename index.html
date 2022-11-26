@@ -11,22 +11,27 @@
 
 <body onload="onInIt()">
     <h1>MINES SWEEPER</h1>
+    <div class="buttons">
+
+        <button onclick="onLevel(4)" class="button easy">
+            EASY
+        </button>
+        <button onclick="onLevel(7)" class="button hard">
+            HARD
+        </button>
+        <button onclick="onLevel(10)" class="button extreme">
+            EXTREME
+        </button>
+    </div>
     <div class="options-tool">
-        <div class="score-counter">COUNTER</div>
-        <button onclick="onStartOver(this)" class="smiley"> </button>
-        <div class="buttons">
-            
-            <button onclick="onLevel(4)" class="button easy">
-                EASY
-            </button>
-            <button onclick="onLevel(7)" class="button hard">
-                HARD
-            </button>
-            <button onclick="onLevel(10)" class="button extreme">
-                EXTREME
-            </button>
+        <div >
+            <span class = "option timer">00:00</span>
+            <span class="option score-counter"></span>
+
+            <span class ="option mines"></span>
         </div>
-        <div class="life"></div>
+        <button onclick="onStartOver(this)" class="option smiley"> </button>
+        <span class="option life">💕 💕 💕</span>
     </div>
     <table class="board">
 

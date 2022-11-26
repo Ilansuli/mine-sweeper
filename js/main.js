@@ -2,35 +2,52 @@
 
 // MINES SWEEPER 
 
+// SYMBOLS
+
 const MINE = '💣'
 const MARK = '🚩'
-const SMILEY = '😎'
-const RESETSMILEY = '😯'
+const SMILEY = '😀'
+const RESTARTSMILEY = '😯'
 const ENDGAMESMILEY = '🤯'
-const LIFE = ['💖,💖,💖']
+const LIFE = '💕'
+
+// ELEMENTS
+
+const elLife = document.querySelector('.life')
+const elSmiley = document.querySelector('.smiley')
+const elHeader = document.querySelector('h1')
+const elOptionsTools = document.querySelector('.options-tool')
+const elBoard = document.querySelector('.board')
+const elMines = document.querySelector('.mines')
+const elScore = document.querySelector('.score-counter')
+const elTimer = document.querySelector('.timer')
+
+//GLOBAL 
 
 var gBoard
 var gGame = {
     isOn: false,
     shownCount: 0,
+    lifeLeft: 3,
+    minesCount: 0,
     markedCount: 0,
-    secsPassed: 0
+    // secsPassed: 0
 }
+var gSeconds = 0
+var gTimerInterval = null
 
-
-function onInIt() {
+function onInIt() {     //Loading refresh
     gBoard = buildBoard(4)
-    renderTools()
+    renderSmiley()
     renderBoard(gBoard)
     scoreCounter()
-    showTimer()
+    minesCounter()
 
-    
 }
-
-function buildBoard(size) {
+function buildBoard(size) {// build data board
     var board = []
-
+    gGame.minesCount = 0
+    gGame.markedCount = 0
     for (let i = 0; i < size; i++) {
         board[i] = []
         for (let j = 0; j < size; j++) {
@@ -46,104 +63,84 @@ function buildBoard(size) {
                     minesAroundCount: 4,
                     isShown: false,
                     isMine: true,
+                    isCounted: false,
                     isMarked: false
                 }
             }
+            if (board[i][j].isMine === true) gGame.minesCount++
         }
-
     }
     return board
 }
+function onCellClicked(elCell, i, j) { // right click action on cell
 
-
-function onCellClicked(elCell, i, j) {
-    if (elCell.innerText === MARK) return
+    var currCellObj = gBoard[i][j]
+    if (elCell.innerText === MARK) return // if cell is flagged
     if (gGame.shownCount === 0) {         //if the game just started
-        gBoard[i][j].isMine = false
-        elCell.innerText = elCell.id
-
         gGame.isOn = true
-        gBoard[i][j].isShown = true
+        gTimerInterval = setInterval(timer, 1000) // timer
+        //first play wont be a mine
+        currCellObj.isMine = false
+        elCell.innerText = elCell.id
+        currCellObj.isShown = true
+        //score counter
         gGame.shownCount++
         scoreCounter()
     }
 
     if (!gGame.isOn) return      //if player lost life and waiting to reset OR gameover
 
-    if (!gBoard[i][j].isShown) {
-        elCell.innerText = (gBoard[i][j].isMine) ? MINE : elCell.id
-        gBoard[i][j].isShown = true
-        // elCell.style.contentVisibility = "visible"
+    if (!currCellObj.isShown) {  //unplayed cells
+
+        expandShown(gBoard,+(elCell.dataset.i),+(elCell.dataset.j)) // checking if negs are mines
+
+        elCell.innerText = (currCellObj.isMine) ? MINE : elCell.id 
+        currCellObj.isShown = true
+        //score counter
         gGame.shownCount++
         scoreCounter()
     }
+    // if player clicked a mine
     checkIfMine(i, j, elCell)
 }
-
-function scoreCounter() {
-    var elScore = document.querySelector('.score-counter')
-    elScore.innerText = gGame.shownCount
-}
-
-window.addEventListener('contextmenu', function (e) {
+window.addEventListener('contextmenu', function (e) {      //disabling context menu
     e.preventDefault();
 }, false);
-
-function onMarked(elCell, i, j) {
-    if (!gGame.isOn) return
-    // elCell.preventDefault();
-    if (gBoard[i][j].isShown) return
-    if (elCell.innerText !== MARK) {
+function onMarked(elCell, i, j) { // left click action on cell
+    var currCellObj = gBoard[i][j]
+    if (!gGame.isOn || currCellObj.isShown) return
+    if (elCell.innerText !== MARK) { //if cell not flagged
         elCell.innerText = MARK
-        gBoard[i][j].isMarked = true
-
-    } else {
+        currCellObj.isMarked = true
+        if (currCellObj.isMine && currCellObj.isMarked && gGame.minesCount !== 0) {
+            if (currCellObj.isCounted) return 
+            currCellObj.isCounted = true
+            gGame.minesCount--
+            minesCounter()
+        }
+    }
+    else {
         elCell.innerText = ""
-        gBoard[i][j].isMarked = false
-
+        currCellObj.isMarked = false
     }
 
 
 
 }
-
-
-function checkIfMine(i, j, elCell) {
-    if (gBoard[i][j].isMine) {
-        gGame.isOn = false
-        gGame.lifeLeft--
-        elCell.style.backgroundColor = "red"
-        var elSmiley = document.querySelector('.smiley')
-        elSmiley.innerText = RESETSMILEY
-        if (gGame.lifeLeft === 0) {
-            document.querySelector('h1').innerText = 'GAME OVER'
-            gGame.isOn = false
-            elSmiley.innerText = ENDGAMESMILEY
-        }
-    }
-}
-function checkGameOver() {
-    for (let i = 0; i < gBoard.length; i++) {
-        for (let j = 0; j < gBoard[0].length; j++) {
-            var currCell = gBoard[i][j]
-            if (currCell.isMine === currCell.isMarked && currCell.isShown) {
-                document.querySelector('h1').innerText = 'VICTORY'
-
-            }
-
-        }
-    }
-}
-
-function onStartOver(elSmiley) {
-    if (elSmiley.innerText === RESETSMILEY) {
+function onStartOver(elSmiley) {    // smiley actions
+    if (elSmiley.innerText === SMILEY) {
+        elHeader.innerText = 'MINES SWEEPER'
+        elLife.innerText = `${LIFE} ${LIFE} ${LIFE}`
         gGame.shownCount = 0
-        elSmiley.innerText = SMILEY
+        gGame.lifeLeft = 3
         onInIt()
-    }
-    if (elSmiley.innerText === ENDGAMESMILEY) {
+    } else if (elSmiley.innerText === RESTARTSMILEY) {
+        gGame.isOn = true
         elSmiley.innerText = SMILEY
-        gGame.lifeLeft = 0
+    } else if (elSmiley.innerText === ENDGAMESMILEY) {
+        elHeader.innerText = 'MINES SWEEPER'
+        elSmiley.innerText = SMILEY
+        gGame.lifeLeft = 3
         gGame.shownCount = 0
         onInIt()
     }

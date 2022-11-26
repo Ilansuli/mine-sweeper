@@ -1,5 +1,4 @@
-
-function renderBoard(board) {
+function renderBoard(board) { // rendering data board to user
     var strHTML = ''
     strHTML += `<tbody>`
     for (let i = 0; i < board.length; i++) {
@@ -16,9 +15,12 @@ function renderBoard(board) {
     }
     strHTML += `</tbody>`
 
-    return document.querySelector('.board').innerHTML = strHTML
+    return elBoard.innerHTML = strHTML
 }
-function setMinesNegsCount(board, rowIdx, colIdx) {
+function renderSmiley() {// rendering data smiley to user
+    elSmiley.innerText = SMILEY
+}
+function setMinesNegsCount(board, rowIdx, colIdx) { // mines counter around desired cell
     var MinesCount = 0
     for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
         if (i < 0 || i >= board.length) continue
@@ -31,22 +33,79 @@ function setMinesNegsCount(board, rowIdx, colIdx) {
     }
     return MinesCount
 }
-
-function renderTools() {
-    var elOptionsTools = document.querySelector('.options-tool')
-    //  var elLife = elOptionsTools.querySelector('.life')
-    var elSmiley = elOptionsTools.querySelector('.smiley')
-    elSmiley.innerText = SMILEY
-    //  elLife.innerText = LIFE
+function expandShown(board,cellI,cellJ) {   
+    for (var i = cellI - 1; i <= cellI + 1; i++) {
+        if (i < 0 || i >= board.length) continue
+        for (var j = cellJ - 1; j <= cellJ + 1; j++) {
+            if (i === cellI && j === cellJ) console.log('hello');
+            if (j < 0 || j >= board[0].length) continue
+            if (!board[i][j].isMine) {
+              var currCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
+              currCell.innerText = currCell.id
+            }
+        }
+    }
 }
+function timer() {  
+    gSeconds++
 
-function onLevel(elLvl){
+    var hrs = Math.floor(gSeconds / 3600)
+    var mins = Math.floor (gSeconds / 60)
+    var secs = gSeconds % 60
+
+    if (secs < 10) secs = '0' + secs
+    if (mins < 10) mins = '0' + mins
+
+    elTimer.innerText = `${mins}:${secs}`
+}
+function checkIfMine(i, j, elCell) {
+    var currCellObj = gBoard[i][j]
+    if (currCellObj.isMine) {
+        gGame.isOn = false
+        gGame.lifeLeft--
+        elCell.style.backgroundColor = "red"
+        elSmiley.innerText = RESTARTSMILEY
+        if (gGame.lifeLeft === 2) {
+            elLife.innerText = `${LIFE} ${LIFE}`
+            elHeader.innerText = `ONLY ${gGame.lifeLeft} LIVES LEFT`
+        }
+        else if (gGame.lifeLeft === 1) {
+            elLife.innerText = `${LIFE}`
+            elHeader.innerText = `ONLY ${gGame.lifeLeft} LIVES LEFT`
+        }
+        else if (gGame.lifeLeft === 0) {
+            clearInterval(gTimerInterval)
+
+            gSeconds = 0
+            gGame.isOn = false
+
+            elTimer.innerText = '00:00'
+            elLife.innerText = ''
+            elHeader.innerText = 'GAME OVER'
+            elSmiley.innerText = ENDGAMESMILEY
+        }
+    }
+}
+function onLevel(elLvl) {   // different levels
+    clearInterval(gTimerInterval)
     gBoard = buildBoard(elLvl)
+    gSeconds = 0
     gGame.shownCount = 0
-      var elScore = document.querySelector('.score-counter')
-    elScore.innerText = gGame.shownCount
+    gGame.lifeLeft = 3
+    elTimer.innerText = '00:00'
+    elHeader.innerText = 'MINES SWEEPER'
+    elMines.innerText = `Mines : ${gGame.markedCount}/${gGame.minesCount}`
+    elScore.innerText = `Score : ${gGame.shownCount}`
+    elLife.innerText = `${LIFE} ${LIFE} ${LIFE}`
+    renderSmiley()
     renderBoard(gBoard)
-    
+
+}
+function scoreCounter() {   
+    elScore.innerText = `Score : ${gGame.shownCount}`
+}
+function minesCounter() {   // data mines counter to show the user 
+    elMines.innerText = `Mines : ${gGame.minesCount}`
 }
 
 
